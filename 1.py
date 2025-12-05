@@ -2,6 +2,7 @@ import asyncio
 import random
 from datetime import datetime
 import pytz
+
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
@@ -40,13 +41,17 @@ async def cmd_about(message: types.Message):
     await message.answer("🤖 Мой первый Telegram-бот\nВерсия: 1.0\nСоздан с помощью aiogram 3.x")
 
 @dp.message(Command("time"))
-@dp.message(Command("time"))
 async def cmd_time(message: types.Message):
-    # Устанавливаем московский часовой пояс
-    moscow_tz = pytz.timezone('Europe/Moscow')
-    moscow_time = datetime.now(moscow_tz)
+    from datetime import datetime, timedelta
+    
+    # UTC время
+    utc_now = datetime.utcnow()
+    
+    # Добавляем 3 часа для Москвы (летнее/зимнее время не учитывается)
+    moscow_time = utc_now + timedelta(hours=3)
+    
     current_time = moscow_time.strftime("%H:%M:%S")
-    await message.answer(f"🕐 Московское время: {current_time}")
+    await message.answer(f"🕐 Время UTC+3: {current_time}\n(UTC было: {utc_now.strftime('%H:%M:%S')})")
 
 @dp.message(Command("random"))
 async def cmd_random(message: types.Message):
@@ -72,8 +77,16 @@ async def handle_hi_button(message: types.Message):
 
 @dp.message(lambda message: message.text == "Время 🕐")
 async def handle_time_button(message: types.Message):
-    current_time = datetime.now().strftime("%H:%M:%S")
-    await message.answer(f"Сейчас: {current_time}")
+    from datetime import datetime, timedelta
+    
+    # UTC время
+    utc_now = datetime.utcnow()
+    
+    # Добавляем 3 часа для Москвы (летнее/зимнее время не учитывается)
+    moscow_time = utc_now + timedelta(hours=3)
+    
+    current_time = moscow_time.strftime("%H:%M:%S")
+    await message.answer(f"🕐 Время UTC+3: {current_time}\n(UTC было: {utc_now.strftime('%H:%M:%S')})")
 
 @dp.message(lambda message: message.text == "Случайное число 🎲")
 async def handle_random_button(message: types.Message):
